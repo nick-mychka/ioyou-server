@@ -3,7 +3,9 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import * as dotenv from 'dotenv';
+
 import auth from './routes/auth.js';
+import people from './routes/people.js';
 
 dotenv.config();
 
@@ -20,15 +22,11 @@ app.use(
 
 // Routes
 app.route('/auth', auth);
+app.route('/people', people);
 
 app.get('/', (c) => {
-  return c.text('Hello Hono!');
+  return c.text('Welcome to IOYou!');
 });
-
-app.get('/me', (c) => {
-  return c.json({ user: 'John Doe', id: 1 });
-});
-
 // Health check
 app.get('/health', (c) => c.json({ status: 'ok' }));
 

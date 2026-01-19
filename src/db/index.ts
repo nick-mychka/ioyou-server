@@ -1,8 +1,11 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
+import * as dotenv from 'dotenv';
 import * as schema from './schema.js';
 
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+dotenv.config();
+
+// eslint-disable-next-line
 const connectionString = process.env.DATABASE_URL!;
 
 // For migrations

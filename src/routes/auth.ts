@@ -1,10 +1,11 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
+import { eq } from 'drizzle-orm';
 import { z } from 'zod';
+
 import { db } from '../db/index.js';
 import { users } from '../db/schema.js';
 import { hashPassword, verifyPassword, generateToken } from '../utils/auth.js';
-import { eq } from 'drizzle-orm';
 import { authMiddleware, type Env } from '../middleware/auth.js';
 
 const auth = new Hono<Env>();

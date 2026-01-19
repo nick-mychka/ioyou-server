@@ -2,10 +2,11 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import type { StringValue } from 'ms';
 
-const SALT_ROUNDS = 10;
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+// eslint-disable-next-line
 const JWT_SECRET: jwt.Secret = process.env.JWT_SECRET!;
 const JWT_EXPIRES_IN = (process.env.JWT_EXPIRES_IN ?? '7d') as StringValue;
+
+const SALT_ROUNDS = 10;
 
 export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, SALT_ROUNDS);
