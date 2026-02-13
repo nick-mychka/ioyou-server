@@ -15,6 +15,20 @@
       "when": 1768683232446,
       "tag": "0001_messy_sauron",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1769026157126,
+      "tag": "0002_illegal_magma",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1769676440112,
+      "tag": "0003_abnormal_puma",
+      "breakpoints": true
     }
   ]
 }

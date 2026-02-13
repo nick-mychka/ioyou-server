@@ -6,6 +6,8 @@ import * as dotenv from 'dotenv';
 
 import auth from './routes/auth.js';
 import people from './routes/people.js';
+import currencies from './routes/currencies.js';
+import recordStatuses from './routes/record-statuses.js';
 
 dotenv.config();
 
@@ -23,6 +25,8 @@ app.use(
 // Routes
 app.route('/auth', auth);
 app.route('/people', people);
+app.route('/currencies', currencies);
+app.route('/record-statuses', recordStatuses);
 
 app.get('/', (c) => {
   return c.text('Welcome to IOYou!');
