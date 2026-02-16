@@ -1,4 +1,4 @@
-import { pgTable, pgEnum, text, timestamp, uuid, decimal, date } from 'drizzle-orm/pg-core';
+import { pgTable, pgEnum, text, timestamp, uuid, decimal } from 'drizzle-orm/pg-core';
 
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -59,8 +59,8 @@ export const records = pgTable('records', {
     .notNull()
     .references(() => currencies.id, { onDelete: 'no action' }),
   note: text('note'),
-  loanDate: date('loan_date').notNull(),
-  dueDate: date('due_date'),
+  loanDate: timestamp('loan_date').notNull(),
+  dueDate: timestamp('due_date'),
   kind: recordKindEnum('kind').notNull(),
   statusId: uuid('status_id')
     .notNull()

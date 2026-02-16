@@ -4,7 +4,7 @@ import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
 
 import { db } from '../db/index.js';
-import { people, records } from '../db/schema.js';
+import { people, records, recordStatuses } from '../db/schema.js';
 import { authMiddleware, type Env } from '../middleware/auth.js';
 
 const peopleRoute = new Hono<Env>();
@@ -15,8 +15,8 @@ peopleRoute.use('*', authMiddleware);
 // Validation schemas
 const createPersonSchema = z.object({
   name: z.string().min(1),
-  email: z.email().optional(),
-  description: z.string().nullable(),
+  email: z.email().nullable().default(null),
+  description: z.string().nullable().default(null),
 });
 
 const updatePersonSchema = z.object({
@@ -25,59 +25,34 @@ const updatePersonSchema = z.object({
   description: z.string().nullable().optional(),
 });
 
+const decimalString = z
+  .number()
+  .refine((val) => !isNaN(val))
+  .transform((val) => val.toString());
+
+const datetimeToDate = z.iso.datetime().transform((val) => new Date(val));
+
 const createRecordSchema = z.object({
-  amount: z.string().refine((val) => !isNaN(parseFloat(val)), {
-    message: 'Amount must be a valid number',
-  }),
+  amount: decimalString,
   currencyId: z.uuid(),
-  note: z.string().nullable().optional(),
-  loanDate: z.iso.date(),
-  dueDate: z.iso.date().nullable().optional(),
+  note: z.string().nullable().default(null),
+  loanDate: datetimeToDate,
+  dueDate: datetimeToDate.nullable().default(null),
   kind: z.enum(['loan', 'debt']),
-  statusId: z.uuid(),
-  interestRate: z
-    .string()
-    .refine((val) => !isNaN(parseFloat(val)), {
-      message: 'Interest rate must be a valid number',
-    })
-    .nullable()
-    .optional(),
-  penalty: z
-    .string()
-    .refine((val) => !isNaN(parseFloat(val)), {
-      message: 'Penalty must be a valid number',
-    })
-    .nullable()
-    .optional(),
+  interestRate: decimalString.nullable().default(null),
+  penalty: decimalString.nullable().default(null),
 });
 
 const updateRecordSchema = z.object({
-  amount: z
-    .string()
-    .refine((val) => !isNaN(parseFloat(val)), {
-      message: 'Amount must be a valid number',
-    })
-    .optional(),
+  amount: decimalString.optional(),
   currencyId: z.uuid().optional(),
   note: z.string().nullable().optional(),
-  loanDate: z.iso.date().optional(),
-  dueDate: z.iso.date().nullable().optional(),
+  loanDate: datetimeToDate.optional(),
+  dueDate: datetimeToDate.nullable().optional(),
   kind: z.enum(['loan', 'debt']).optional(),
   statusId: z.uuid().optional(),
-  interestRate: z
-    .string()
-    .refine((val) => !isNaN(parseFloat(val)), {
-      message: 'Interest rate must be a valid number',
-    })
-    .nullable()
-    .optional(),
-  penalty: z
-    .string()
-    .refine((val) => !isNaN(parseFloat(val)), {
-      message: 'Penalty must be a valid number',
-    })
-    .nullable()
-    .optional(),
+  interestRate: decimalString.nullable().optional(),
+  penalty: decimalString.nullable().optional(),
 });
 
 // GET /people - List all people created by the current user
@@ -251,19 +226,19 @@ peopleRoute.post('/:personId/records', zValidator('json', createRecordSchema), a
       return c.json({ error: 'Person not found' }, 404);
     }
 
+    const activeStatus = await db.query.recordStatuses.findFirst({
+      where: eq(recordStatuses.code, 'active'),
+    });
+    if (!activeStatus) {
+      return c.json({ error: 'Active status not found' }, 500);
+    }
+
     const [record] = await db
       .insert(records)
       .values({
+        ...data,
         personId,
-        amount: data.amount,
-        currencyId: data.currencyId,
-        note: data.note ?? null,
-        loanDate: data.loanDate,
-        dueDate: data.dueDate ?? null,
-        kind: data.kind,
-        statusId: data.statusId,
-        interestRate: data.interestRate ?? null,
-        penalty: data.penalty ?? null,
+        statusId: activeStatus.id,
       })
       .returning();
     return c.json({ record }, 201);
