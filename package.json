@@ -21,6 +21,7 @@
     "hono": "^4.11.3",
     "jsonwebtoken": "^9.0.3",
     "postgres": "^3.4.7",
+    "typescript": "^5.9.3",
     "zod": "^4.3.3"
   },
   "devDependencies": {
@@ -34,7 +35,6 @@
     "eslint-plugin-prettier": "^5.5.4",
     "prettier": "^3.7.4",
     "tsx": "^4.7.1",
-    "typescript": "^5.8.3",
     "typescript-eslint": "^8.51.0"
   }
 }
