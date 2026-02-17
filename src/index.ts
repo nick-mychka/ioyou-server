@@ -37,7 +37,7 @@ app.get('/health', (c) => c.json({ status: 'ok' }));
 const server = serve(
   {
     fetch: app.fetch,
-    port: process.env.PORT ? parseInt(process.env.PORT, 10) : 3000,
+    port: process.env.PORT ? Number(process.env.PORT) : 3000,
   },
   (info) => {
     console.log(`Server is running on http://localhost:${info.port}`);
